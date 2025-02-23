@@ -1,7 +1,7 @@
 # 🚀 To-Do List  
 
 ## 📌 Description  
-This project is being developed for the **Web Development** course in the **fifth semester** of **Software Engineering** at **Católica SC**.  
+This project is being developed for the **Web Development** subject in the **fifth semester** of **Software Engineering** at **Católica SC**.  
 
 ## 🎯 Project Scope  
 The **To-Do List** application aims to assist people in managing their daily tasks more efficiently.  
