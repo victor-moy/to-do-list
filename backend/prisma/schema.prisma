@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  name     String
+  email    String   @unique
+  password String?
+  tasks    Task[]
+  comments Comment[]
+  shared   SharedTask[]
+}
+
+model Task {
+  id          String      @id @default(uuid())
+  title       String
+  description String?
+  status      String      @default("To Do")
+  priority    String      @default("Medium")
+  createdAt   DateTime    @default(now())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  attachments Attachment[]
+  sharedWith  SharedTask[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  taskId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  fileUrl   String
+  uploadedAt DateTime @default(now())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model SharedTask {
+  id          String   @id @default(uuid())
+  taskId      String
+  sharedWithId String
+  sharedAt    DateTime @default(now())
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  sharedWith  User     @relation(fields: [sharedWithId], references: [id], onDelete: Cascade)
+}
