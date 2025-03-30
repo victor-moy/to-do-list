@@ -4,7 +4,7 @@ const {
   registerUser,
   loginUser,
   googleLogin,
-} = require("../controllers/userController");
+} = require("./controllers/userController");
 
 // Rota de registro de usuário
 router.post("/register", registerUser);
