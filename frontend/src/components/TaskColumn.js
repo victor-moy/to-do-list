@@ -44,7 +44,7 @@ const TaskColumn = ({
           backgroundColor: "#fff",
           borderRadius: "8px",
           padding: 2,
-          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.05)",
+          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
           display: "flex",
           flexDirection: "column",
           flexGrow: 1,
@@ -52,17 +52,17 @@ const TaskColumn = ({
         }}
       >
         <Typography
-          variant="subtitle2"
+          variant="h6"
           align="center"
           gutterBottom
           sx={{ color: "#777", mb: 1 }}
         >
-          {statusLabel}
+          {statusLabel} ({tasks.length})
         </Typography>
         <Box
           sx={{
             flex: 1,
-            backgroundColor: "#eee",
+            backgroundColor: "#f0f0f0",
             padding: 1,
             borderRadius: "8px",
             overflowY: "auto",
@@ -77,7 +77,7 @@ const TaskColumn = ({
                 onClick={onTaskClick}
                 onDragStart={onDragStart}
                 onDragOver={onDragOver}
-                onDrop={onDropOnItem}
+                onDrop={(e) => onDropOnItem(e, task)}
               />
             ))}
           </List>

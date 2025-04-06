@@ -8,11 +8,11 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import api from "./services/api";
+import api from "../services/api";
 import AddIcon from "@mui/icons-material/Add";
-import EditTaskModal from "./components/EditTaskModal";
-import AddTaskModal from "./components/AddTaskModal";
-import TaskColumn from "./components/TaskColumn"; // Importe o componente TaskColumn
+import EditTaskModal from "../components/EditTaskModal";
+import AddTaskModal from "../components/AddTaskModal";
+import TaskColumn from "../components/TaskColumn"; // Importe o componente TaskColumn
 
 const statusLabels = {
   ToDo: "A Fazer",

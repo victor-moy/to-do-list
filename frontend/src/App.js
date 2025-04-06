@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google"; // Importação do GoogleOAuthProvider
-import TaskList from "./TaskList";
+import TaskList from "./pages/TaskList";
 import Login from "./pages/Login";
 import Register from "./pages/Register"; // Importação da tela de cadastro
 
