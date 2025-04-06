@@ -1,18 +1,28 @@
 const express = require("express");
-const router = express.Router();
-const {
-  registerUser,
-  loginUser,
-  googleLogin,
-} = require("../controllers/userController");
+const cors = require("cors");
+const userRoutes = require("./routes/userRoutes");
+const taskRoutes = require("./routes/taskRoutes");
 
-// Rota de registro de usuário
-router.post("/register", registerUser);
+const app = express();
+const PORT = process.env.PORT || 5001;
 
-// Rota de login de usuário
-router.post("/login", loginUser);
+// Middleware para aceitar JSON
+app.use(express.json());
 
-// Rota de login com Google
-router.post("/google-login", googleLogin);
+// Configuração de CORS para permitir requisições do frontend
+app.use(
+  cors({
+    origin: "http://localhost:3000", // libera acesso do frontend local
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
 
-module.exports = router;
+// Rotas de usuários
+app.use("/users", userRoutes);
+app.use("/tasks", taskRoutes);
+
+// Inicia o servidor
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+});
