@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {
-  registerUser,
-  loginUser,
-  googleLogin,
-} = require("./controllers/userController");
+const { registerUser, loginUser, googleLogin } = require("./controllers/");
 
 // Rota de registro de usuário
 router.post("/register", registerUser);
