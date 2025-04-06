@@ -13,7 +13,7 @@ CREATE TABLE "Task" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
-    "status" TEXT NOT NULL DEFAULT 'To Do',
+    "status" TEXT NOT NULL DEFAULT 'ToDo',
     "priority" TEXT NOT NULL DEFAULT 'Medium',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" TEXT NOT NULL,
