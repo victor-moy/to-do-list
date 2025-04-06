@@ -67,23 +67,27 @@ const loginUser = async (req, res) => {
 
 // Função de login com Google
 const googleLogin = async (req, res) => {
-  const { token } = req.body; // Token do Google enviado do frontend
+  console.log("Rota /users/google-login chamada");
+  console.log("Headers da requisição:", req.headers);
+  console.log("Corpo da requisição:", req.body);
+  const { token } = req.body;
+  console.log("Token recebido:", token);
   try {
-    // Verificar o token com o Google
+    console.log("Iniciando verificação do token do Google");
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID, // Substitua pelo seu Google Client ID
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
-
-    // Obter os dados do usuário
+    console.log("Verificação do token bem-sucedida");
     const payload = ticket.getPayload();
+    console.log("Payload do Google:", payload);
     const { sub, email, name, picture } = payload;
+    console.log("Dados extraídos do payload:", { sub, email, name, picture });
 
-    // Verifique se o usuário já existe no banco
+    console.log("Verificando se o usuário já existe");
     let user = await prisma.user.findUnique({ where: { email } });
-
     if (!user) {
-      // Se o usuário não existir, crie um novo usuário
+      console.log("Usuário não encontrado, criando novo usuário");
       user = await prisma.user.create({
         data: {
           googleId: sub,
@@ -92,22 +96,30 @@ const googleLogin = async (req, res) => {
           picture,
         },
       });
+      console.log("Novo usuário criado:", user);
+    } else {
+      console.log("Usuário encontrado:", user);
     }
 
-    // Gerar um token JWT para o usuário
+    console.log("Gerando JWT");
     const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "1h", // O token expira em 1 hora, você pode ajustar
+      expiresIn: "1h",
     });
+    console.log("JWT gerado:", jwtToken);
 
-    // Retornar o usuário e o token JWT
+    console.log("Enviando resposta");
     res.status(200).json({
       userId: user.id,
       token: jwtToken,
       message: "Login com Google realizado com sucesso",
     });
+    console.log("Resposta enviada");
   } catch (error) {
-    console.error(error);
+    console.error("Erro no googleLogin:", error);
+    console.error("Detalhes do erro:", error.stack || error.message || error);
     res.status(500).send("Erro ao fazer login com o Google.");
+  } finally {
+    console.log("Finalizando googleLogin");
   }
 };
 

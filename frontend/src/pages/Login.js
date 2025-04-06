@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "./services/api";
 import {
   Container,
   TextField,
@@ -10,62 +9,20 @@ import {
   Snackbar,
 } from "@mui/material";
 import { GoogleLogin } from "@react-oauth/google";
+import useAuth from "../hooks/useAuth"; // Importe o Hook
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false); // Estado para controlar o Snackbar
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // Mensagem do Snackbar
   const navigate = useNavigate();
-
-  // Função para abrir o Snackbar com a mensagem
-  const handleSnackbarOpen = (message) => {
-    setSnackbarMessage(message);
-    setOpenSnackbar(true);
-  };
-
-  // Função de login
-  const handleLogin = async () => {
-    setIsLoading(true);
-    try {
-      const { data } = await api.post("/users/login", { email, password });
-      setIsLoading(false);
-
-      if (data.userId && data.token) {
-        localStorage.setItem("userId", data.userId);
-        localStorage.setItem("token", data.token);
-        navigate("/tasks");
-      } else {
-        handleSnackbarOpen("Erro: dados de login incompletos.");
-      }
-    } catch (error) {
-      setIsLoading(false);
-      handleSnackbarOpen("Erro ao fazer login");
-    }
-  };
-
-  // Função de login com Google
-  const handleGoogleLoginSuccess = async (response) => {
-    setIsLoading(true);
-    try {
-      const { data } = await api.post("/users/google-login", {
-        token: response.credential,
-      });
-      setIsLoading(false);
-
-      if (data.userId && data.token) {
-        localStorage.setItem("userId", data.userId);
-        localStorage.setItem("token", data.token);
-        navigate("/tasks");
-      } else {
-        handleSnackbarOpen("Erro ao fazer login com o Google.");
-      }
-    } catch (error) {
-      setIsLoading(false);
-      handleSnackbarOpen("Erro ao autenticar com o Google.");
-    }
-  };
+  const {
+    isLoading,
+    openSnackbar,
+    snackbarMessage,
+    handleLogin,
+    handleGoogleLoginSuccess,
+    setOpenSnackbar,
+  } = useAuth(); // Use o Hook
 
   // Função para verificar se o botão de login deve ser desabilitado
   const isLoginDisabled = !email || !password;
@@ -117,17 +74,15 @@ function Login() {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleLogin}
-            disabled={isLoading || isLoginDisabled} // Desabilita o botão se email ou senha estiverem vazios
+            onClick={() => handleLogin(email, password)} // Chame a função do Hook
+            disabled={isLoading || isLoginDisabled}
           >
             {isLoading ? "Carregando..." : "Login"}
           </Button>
 
           <GoogleLogin
-            onSuccess={handleGoogleLoginSuccess}
-            onError={() =>
-              handleSnackbarOpen("Erro ao autenticar com o Google")
-            }
+            onSuccess={handleGoogleLoginSuccess} // Chame a função do Hook
+            onError={() => setOpenSnackbar("Erro ao autenticar com o Google")}
             useOneTap
           />
 

@@ -13,4 +13,7 @@ router.post("/register", registerUser);
 // Rota para login de usuário
 router.post("/login", loginUser);
 
+// Rota para login com Google (ADICIONE ESTA ROTA)
+router.post("/google-login", googleLogin);
+
 module.exports = router;

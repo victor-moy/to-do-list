@@ -3,11 +3,12 @@ const {
   getTasks,
   createTask,
   updateTask,
+  deleteTask, // Importe a função deleteTask do seu controller
 } = require("../controllers/taskController");
 const multer = require("multer");
 
-// Configuração do Multer para lidar com o upload de arquivos
-const upload = multer({ dest: "uploads/" }); // Define o diretório onde os arquivos serão armazenados
+// Configuração do Multer (se você precisar dele para a exclusão, o que é improvável)
+const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
 
@@ -15,9 +16,12 @@ const router = express.Router();
 router.get("/:userId", getTasks);
 
 // Rota para criar nova tarefa (com suporte para upload de arquivos)
-router.post("/", upload.array("files"), createTask); // Usando 'upload.array("files")' para permitir múltiplos arquivos
+router.post("/", upload.array("files"), createTask);
 
-// Rota para atualizar tarefa (agora com o nome de parâmetro "id" em vez de "taskId")
-router.put("/:id", upload.array("files"), updateTask); // Usando 'upload.array("files")' também aqui para permitir anexos na atualização
+// Rota para atualizar tarefa
+router.put("/:id", upload.array("files"), updateTask);
+
+// Rota para deletar tarefa
+router.delete("/:id", deleteTask);
 
 module.exports = router;

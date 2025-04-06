@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "./services/api";
 import {
   Container,
   TextField,
@@ -12,49 +11,47 @@ import {
   Alert,
   FormHelperText,
 } from "@mui/material";
+import useAuth from "../hooks/useAuth"; // Ajuste o caminho
 
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [openSnackbar, setOpenSnackbar] = useState(false);
   const navigate = useNavigate();
+  const {
+    isLoading,
+    openSnackbar,
+    snackbarMessage,
+    handleRegister,
+    setOpenSnackbar,
+  } = useAuth(); // Use o Hook
 
   // Validação de email e senha
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidPassword = (password) =>
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(password);
 
-  // Função de registro
-  const register = async () => {
-    if (!name.trim()) return showMessage("O nome não pode estar vazio!");
-    if (!isValidEmail(email)) return showMessage("Email inválido!");
+  const registerUser = async () => {
+    // Renomeie para evitar conflito com a função do Hook
+    if (!name.trim())
+      return setOpenSnackbar({
+        message: "O nome não pode estar vazio!",
+        open: true,
+      });
+    if (!isValidEmail(email))
+      return setOpenSnackbar({ message: "Email inválido!", open: true });
     if (!isValidPassword(password))
-      return showMessage("Senha não atende os requisitos!");
+      return setOpenSnackbar({
+        message: "Senha não atende os requisitos!",
+        open: true,
+      });
 
-    try {
-      setLoading(true);
-      await api.post("/users/register", { name, email, password });
-      showMessage("Cadastro realizado com sucesso!", "success");
-      setTimeout(() => navigate("/"), 2000);
-    } catch {
-      showMessage("Erro ao cadastrar. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Exibe mensagens de erro ou sucesso
-  const showMessage = (message, severity = "error") => {
-    setErrorMessage(message);
-    setOpenSnackbar(true);
+    await handleRegister(name, email, password);
   };
 
   return (
     <Container maxWidth="sm">
-      {loading && (
+      {isLoading && (
         <Box
           sx={{
             position: "fixed",
@@ -96,7 +93,7 @@ function Register() {
           margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          disabled={loading}
+          disabled={isLoading}
         />
         <TextField
           label="Email"
@@ -105,7 +102,7 @@ function Register() {
           margin="normal"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          disabled={loading}
+          disabled={isLoading}
           error={email && !isValidEmail(email)}
           helperText={email && !isValidEmail(email) ? "Email inválido" : ""}
         />
@@ -117,7 +114,7 @@ function Register() {
           margin="normal"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          disabled={loading}
+          disabled={isLoading}
           error={password && !isValidPassword(password)}
         />
 
@@ -130,16 +127,16 @@ function Register() {
           <Button
             variant="contained"
             color="primary"
-            onClick={register}
+            onClick={registerUser}
             sx={{ marginBottom: 2 }}
-            disabled={loading}
+            disabled={isLoading}
           >
             Cadastrar
           </Button>
           <Button
             variant="text"
             onClick={() => navigate("/")}
-            disabled={loading}
+            disabled={isLoading}
           >
             Já tem uma conta? Faça login
           </Button>
@@ -154,10 +151,10 @@ function Register() {
       >
         <Alert
           onClose={() => setOpenSnackbar(false)}
-          severity={errorMessage.includes("sucesso") ? "success" : "error"}
+          severity={snackbarMessage.includes("sucesso") ? "success" : "error"}
           sx={{ width: "100%" }}
         >
-          {errorMessage}
+          {snackbarMessage}
         </Alert>
       </Snackbar>
     </Container>

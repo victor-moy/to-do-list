@@ -12,7 +12,7 @@ app.use(express.json());
 // Configuração de CORS para permitir requisições do frontend
 app.use(
   cors({
-    origin: "http://localhost:3000", // libera acesso do frontend local
+    origin: "*", // libera acesso do frontend local
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })

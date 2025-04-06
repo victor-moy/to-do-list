@@ -118,8 +118,24 @@ const updateTask = async (req, res) => {
   }
 };
 
+// Excluir uma tarefa
+const deleteTask = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.task.delete({
+      where: { id },
+    });
+    res.json({ message: "Tarefa excluída com sucesso!" });
+  } catch (error) {
+    console.error("Erro ao excluir tarefa:", error);
+    res.status(500).json({ error: "Erro ao excluir tarefa" });
+  }
+};
+
 module.exports = {
   getTasks,
   createTask,
   updateTask,
+  deleteTask, // Adicione a função deleteTask aqui
 };

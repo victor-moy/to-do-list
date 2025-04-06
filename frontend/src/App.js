@@ -2,8 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google"; // Importação do GoogleOAuthProvider
 import TaskList from "./TaskList";
-import Login from "./Login";
-import Register from "./Register"; // Importação da tela de cadastro
+import Login from "./pages/Login";
+import Register from "./pages/Register"; // Importação da tela de cadastro
 
 const clientId =
   "94362032696-7lqiqbivh1l52spvvlj9rt09o1ncjjd3.apps.googleusercontent.com";
