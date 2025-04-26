@@ -56,10 +56,13 @@ const createTask = async (req, res) => {
     // Processando os arquivos, se houver
     if (files && files.length > 0) {
       for (const file of files) {
+        const fileUrl = `http://localhost:5001/uploads/${file.filename}`; // Defina a URL pública do arquivo
+
         await prisma.attachment.create({
           data: {
             filePath: file.path, // Caminho do arquivo armazenado
             taskId: task.id, // Associando o arquivo à tarefa criada
+            fileUrl: fileUrl, // A URL pública do arquivo
           },
         });
       }
@@ -102,10 +105,13 @@ const updateTask = async (req, res) => {
     // Processando os arquivos, se houver
     if (files && files.length > 0) {
       for (const file of files) {
+        const fileUrl = `http://localhost:5001/uploads/${file.filename}`; // Defina a URL pública do arquivo
+
         await prisma.attachment.create({
           data: {
-            filePath: file.path,
-            taskId: updatedTask.id,
+            filePath: file.path, // Caminho do arquivo armazenado
+            taskId: task.id, // Associando o arquivo à tarefa criada
+            fileUrl: fileUrl, // A URL pública do arquivo
           },
         });
       }

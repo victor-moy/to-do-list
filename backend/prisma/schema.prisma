@@ -15,6 +15,8 @@ model User {
   tasks    Task[]
   comments Comment[]
   shared   SharedTask[]
+  googleId  String?
+  picture   String? 
 }
 
 model Task {
@@ -44,6 +46,7 @@ model Comment {
 model Attachment {
   id        String   @id @default(uuid())
   fileUrl   String
+  filePath  String   // Certifique-se de que esse campo está aqui
   uploadedAt DateTime @default(now())
   taskId    String
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
