@@ -139,9 +139,37 @@ const deleteTask = async (req, res) => {
   }
 };
 
+// Obter tarefa compartilhada
+const getSharedTask = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const task = await prisma.task.findUnique({
+      where: { id },
+      include: {
+        attachments: true,
+      },
+    });
+
+    if (!task) {
+      return res.status(404).json({ error: "Tarefa não encontrada." });
+    }
+
+    // Retorna somente dados necessários
+    const { title, description, status, priority, createdAt, attachments } =
+      task;
+
+    res.json({ title, description, status, priority, createdAt, attachments });
+  } catch (error) {
+    console.error("Erro ao buscar tarefa compartilhada:", error);
+    res.status(500).json({ error: "Erro ao buscar tarefa compartilhada" });
+  }
+};
+
 module.exports = {
   getTasks,
   createTask,
   updateTask,
+  getSharedTask,
   deleteTask, // Adicione a função deleteTask aqui
 };

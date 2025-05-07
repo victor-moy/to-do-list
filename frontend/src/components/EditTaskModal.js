@@ -89,6 +89,16 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
         </FormControl>
       </DialogContent>
       <DialogActions>
+        {task && (
+          <Button
+            href={`${window.location.origin}/shared/${task.id}`}
+            target="_blank"
+            variant="outlined"
+            sx={{ mr: "auto" }}
+          >
+            Compartilhar
+          </Button>
+        )}
         <Button onClick={onClose}>Cancelar</Button>
         <Button onClick={handleSave} variant="contained" color="primary">
           Salvar

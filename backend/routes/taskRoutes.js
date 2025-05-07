@@ -3,6 +3,7 @@ const {
   getTasks,
   createTask,
   updateTask,
+  getSharedTask,
   deleteTask, // Importe a função deleteTask do seu controller
 } = require("../controllers/taskController");
 const multer = require("multer");
@@ -23,5 +24,7 @@ router.put("/:id", upload.array("files"), updateTask);
 
 // Rota para deletar tarefa
 router.delete("/:id", deleteTask);
+
+router.get("/shared/:id", getSharedTask);
 
 module.exports = router;
