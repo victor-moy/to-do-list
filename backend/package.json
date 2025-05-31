@@ -6,7 +6,8 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "postinstall": "npx prisma migrate deploy"
   },
   "keywords": [],
   "author": "",
