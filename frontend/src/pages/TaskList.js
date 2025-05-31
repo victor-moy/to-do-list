@@ -112,7 +112,23 @@ function TaskList() {
   const handleUpdateTaskDetails = async (updatedTaskData) => {
     if (selectedTask) {
       try {
-        await api.put(`/tasks/${selectedTask.id}`, updatedTaskData);
+        const formData = new FormData();
+        formData.append("title", updatedTaskData.title);
+        formData.append("description", updatedTaskData.description);
+        formData.append("status", updatedTaskData.status);
+        formData.append("priority", updatedTaskData.priority);
+        formData.append("userId", updatedTaskData.userId);
+
+        if (updatedTaskData.newFiles?.length > 0) {
+          updatedTaskData.newFiles.forEach((file) => {
+            formData.append("files", file);
+          });
+        }
+
+        await api.put(`/tasks/${selectedTask.id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
         fetchTasks();
         setSelectedTask(null);
       } catch (error) {
