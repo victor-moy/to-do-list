@@ -71,7 +71,7 @@ const createTask = async (req, res) => {
 
     if (files && files.length > 0) {
       for (const file of files) {
-        const fileUrl = `http://localhost:5001/uploads/${file.filename}`;
+        const fileUrl = `${process.env.BASE_URL}/uploads/${file.filename}`;
         await prisma.attachment.create({
           data: {
             filePath: file.path,
@@ -115,7 +115,7 @@ const updateTask = async (req, res) => {
 
     if (files && files.length > 0) {
       for (const file of files) {
-        const fileUrl = `http://localhost:5001/uploads/${file.filename}`;
+        const fileUrl = `${process.env.BASE_URL}/uploads/${file.filename}`;
         await prisma.attachment.create({
           data: {
             filePath: file.path,
