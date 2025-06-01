@@ -9,12 +9,16 @@ import {
   Snackbar,
 } from "@mui/material";
 import { GoogleLogin } from "@react-oauth/google";
-import useAuth from "../hooks/useAuth"; // Importe o Hook
+import useAuth from "../hooks/useAuth"; // Hook personalizado de autenticação
 
-function Login() {
+const Login = () => {
+  // Estados locais para armazenar email e senha
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
+
+  // Funções e variáveis do hook de autenticação
   const {
     isLoading,
     openSnackbar,
@@ -22,9 +26,9 @@ function Login() {
     handleLogin,
     handleGoogleLoginSuccess,
     setOpenSnackbar,
-  } = useAuth(); // Use o Hook
+  } = useAuth();
 
-  // Função para verificar se o botão de login deve ser desabilitado
+  // Condição para desabilitar o botão se campos estiverem vazios
   const isLoginDisabled = !email || !password;
 
   return (
@@ -45,6 +49,7 @@ function Login() {
           Autenticação
         </Typography>
 
+        {/* Campo de email */}
         <TextField
           label="Email"
           variant="outlined"
@@ -53,6 +58,8 @@ function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+
+        {/* Campo de senha */}
         <TextField
           label="Senha"
           type="password"
@@ -71,21 +78,24 @@ function Login() {
             gap: 2,
           }}
         >
+          {/* Botão de login tradicional */}
           <Button
             variant="contained"
             color="primary"
-            onClick={() => handleLogin(email, password)} // Chame a função do Hook
+            onClick={() => handleLogin(email, password)}
             disabled={isLoading || isLoginDisabled}
           >
             {isLoading ? "Carregando..." : "Login"}
           </Button>
 
+          {/* Login com Google */}
           <GoogleLogin
-            onSuccess={handleGoogleLoginSuccess} // Chame a função do Hook
+            onSuccess={handleGoogleLoginSuccess}
             onError={() => setOpenSnackbar("Erro ao autenticar com o Google")}
             useOneTap
           />
 
+          {/* Redireciona para página de registro */}
           <Button
             variant="outlined"
             color="secondary"
@@ -96,7 +106,7 @@ function Login() {
         </Box>
       </Box>
 
-      {/* Snackbar para mostrar mensagens de erro ou sucesso */}
+      {/* Snackbar para mensagens de erro ou sucesso */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}
@@ -105,6 +115,6 @@ function Login() {
       />
     </Container>
   );
-}
+};
 
 export default Login;

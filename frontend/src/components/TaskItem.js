@@ -1,23 +1,27 @@
 import React from "react";
 import { ListItem, Typography, Box, Chip } from "@mui/material";
 
+// Mapeamento de cores baseado na prioridade
 const priorityColors = {
-  Low: "#4CAF50",
-  Medium: "#FFC107",
-  High: "#F44336",
+  Low: "#4CAF50", // Verde: baixa prioridade
+  Medium: "#FFC107", // Amarelo: prioridade média
+  High: "#F44336", // Vermelho: alta prioridade
 };
 
+/**
+ * Componente que representa visualmente uma única tarefa dentro da coluna.
+ * Permite clique para abrir o modal de edição e suporte a drag-and-drop.
+ */
 const TaskItem = ({ task, onClick, onDragStart, onDragOver, onDrop }) => {
   return (
     <ListItem
-      key={task.id}
-      draggable
-      onClick={() => onClick(task)}
-      onDragStart={() => onDragStart(task.id)}
-      onDragOver={onDragOver}
-      onDrop={(e) => onDrop(e, task)}
+      draggable // Torna o item arrastável
+      onClick={() => onClick(task)} // Ao clicar, abre o modal
+      onDragStart={() => onDragStart(task.id)} // Início do drag (envia ID da tarefa)
+      onDragOver={onDragOver} // Permite drop por cima
+      onDrop={(e) => onDrop(e, task)} // Drop realizado sobre outra tarefa
       sx={{
-        border: `1px solid ${priorityColors[task.priority]}`,
+        border: `1px solid ${priorityColors[task.priority]}`, // Borda com base na prioridade
         backgroundColor: "#f9f9f9",
         borderRadius: "4px",
         marginBottom: "8px",
@@ -32,14 +36,19 @@ const TaskItem = ({ task, onClick, onDragStart, onDragOver, onDrop }) => {
         width: "100%",
       }}
     >
+      {/* Título da tarefa */}
       <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
         {task.title}
       </Typography>
+
+      {/* Descrição, se existir */}
       {task.description && (
         <Typography variant="body2" color="textSecondary">
           {task.description}
         </Typography>
       )}
+
+      {/* Chip com a prioridade */}
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
         <Chip
           label={task.priority}

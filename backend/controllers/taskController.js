@@ -1,14 +1,24 @@
+// taskController.js
+
 const { PrismaClient } = require("@prisma/client");
 const multer = require("multer");
 const path = require("path");
-const prisma = new PrismaClient();
 const fs = require("fs");
 
-// Configuração do Multer para o armazenamento de arquivos
+// Instância do Prisma
+const prisma = new PrismaClient();
+
+// BASE_URL para arquivos, com fallback para ambiente local
+const BASE_URL = process.env.BASE_URL || "http://localhost:5001";
+
+/**
+ * Configuração de upload de arquivos via multer
+ * - Armazena em /uploads
+ * - Limita a 10MB
+ * - Aceita apenas tipos permitidos
+ */
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./uploads");
-  },
+  destination: (req, file, cb) => cb(null, "./uploads"),
   filename: (req, file, cb) => {
     const uniqueName = `${Date.now()}-${file.originalname.replace(
       /\s+/g,
@@ -19,36 +29,31 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // Limite de 10 MB
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
     const allowedTypes = [
       "image/jpeg",
       "image/png",
       "image/gif",
       "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "text/plain",
     ];
-
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error("Tipo de arquivo não permitido"), false);
-    }
+    allowedTypes.includes(file.mimetype)
+      ? cb(null, true)
+      : cb(new Error("Tipo de arquivo não permitido"), false);
   },
-}).array("files"); // input name no frontend
+}).array("files");
 
-// Buscar todas as tarefas de um usuário (com anexos)
+// Retorna todas as tarefas de um usuário (com anexos incluídos)
 const getTasks = async (req, res) => {
   const { userId } = req.params;
   try {
     const tasks = await prisma.task.findMany({
       where: { userId },
       orderBy: { createdAt: "asc" },
-      include: {
-        attachments: true, // ✅ Importante
-      },
+      include: { attachments: true },
     });
     res.json(tasks);
   } catch (error) {
@@ -57,33 +62,35 @@ const getTasks = async (req, res) => {
   }
 };
 
-// Criar nova tarefa com anexo
+// Cria uma nova tarefa e salva arquivos, se houver
 const createTask = async (req, res) => {
-  const { title, userId, status, description, priority } = req.body;
+  const {
+    title,
+    userId,
+    status = "ToDo",
+    description = "",
+    priority = "Medium",
+  } = req.body;
   const files = req.files;
 
   try {
     const task = await prisma.task.create({
-      data: {
-        title,
-        userId,
-        status: status || "ToDo",
-        description: description || "",
-        priority: priority || "Medium",
-      },
+      data: { title, userId, status, description, priority },
     });
 
-    if (files && files.length > 0) {
-      for (const file of files) {
-        const fileUrl = `${process.env.BASE_URL}/uploads/${file.filename}`;
-        await prisma.attachment.create({
-          data: {
-            filePath: file.path,
-            taskId: task.id,
-            fileUrl: fileUrl,
-          },
-        });
-      }
+    // Salva anexos no banco, se houver arquivos
+    if (files?.length) {
+      await Promise.all(
+        files.map((file) =>
+          prisma.attachment.create({
+            data: {
+              filePath: file.path,
+              fileUrl: `${BASE_URL}/uploads/${file.filename}`,
+              taskId: task.id,
+            },
+          })
+        )
+      );
     }
 
     res.status(201).json(task);
@@ -93,41 +100,36 @@ const createTask = async (req, res) => {
   }
 };
 
-// Atualizar uma tarefa (e salvar novos anexos, se enviados)
+// Atualiza dados da tarefa e adiciona novos anexos se houver
 const updateTask = async (req, res) => {
   const { title, description, priority, status, userId } = req.body;
   const { id } = req.params;
   const files = req.files;
 
-  try {
-    if (!title || !description || !status || !priority || !userId) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
-    }
+  if (!title || !description || !status || !priority || !userId) {
+    return res
+      .status(400)
+      .json({ error: "Todos os campos devem ser preenchidos" });
+  }
 
+  try {
     const updatedTask = await prisma.task.update({
       where: { id },
-      data: {
-        title,
-        description,
-        priority,
-        status,
-        userId,
-      },
+      data: { title, description, priority, status, userId },
     });
 
-    if (files && files.length > 0) {
-      for (const file of files) {
-        const fileUrl = `${process.env.BASE_URL}/uploads/${file.filename}`;
-        await prisma.attachment.create({
-          data: {
-            filePath: file.path,
-            taskId: updatedTask.id, // ✅ Correção
-            fileUrl: fileUrl,
-          },
-        });
-      }
+    if (files?.length) {
+      await Promise.all(
+        files.map((file) =>
+          prisma.attachment.create({
+            data: {
+              filePath: file.path,
+              fileUrl: `${BASE_URL}/uploads/${file.filename}`,
+              taskId: updatedTask.id,
+            },
+          })
+        )
+      );
     }
 
     res.json(updatedTask);
@@ -137,14 +139,11 @@ const updateTask = async (req, res) => {
   }
 };
 
-// Excluir tarefa
+// Exclui uma tarefa pelo ID
 const deleteTask = async (req, res) => {
   const { id } = req.params;
-
   try {
-    await prisma.task.delete({
-      where: { id },
-    });
+    await prisma.task.delete({ where: { id } });
     res.json({ message: "Tarefa excluída com sucesso!" });
   } catch (error) {
     console.error("Erro ao excluir tarefa:", error);
@@ -152,16 +151,13 @@ const deleteTask = async (req, res) => {
   }
 };
 
-// Obter tarefa compartilhada (com anexos)
+// Retorna uma tarefa compartilhada com seus anexos
 const getSharedTask = async (req, res) => {
   const { id } = req.params;
-
   try {
     const task = await prisma.task.findUnique({
       where: { id },
-      include: {
-        attachments: true,
-      },
+      include: { attachments: true },
     });
 
     if (!task) {
@@ -170,7 +166,6 @@ const getSharedTask = async (req, res) => {
 
     const { title, description, status, priority, createdAt, attachments } =
       task;
-
     res.json({ title, description, status, priority, createdAt, attachments });
   } catch (error) {
     console.error("Erro ao buscar tarefa compartilhada:", error);
@@ -178,6 +173,7 @@ const getSharedTask = async (req, res) => {
   }
 };
 
+// Remove anexo tanto do disco quanto do banco
 const deleteAttachment = async (req, res) => {
   const { id } = req.params;
   try {
@@ -185,14 +181,12 @@ const deleteAttachment = async (req, res) => {
     if (!attachment)
       return res.status(404).json({ error: "Anexo não encontrado" });
 
-    // Remove arquivo fisicamente
+    // Remove o arquivo físico
     fs.unlink(attachment.filePath, (err) => {
       if (err) console.warn("Erro ao remover arquivo do disco:", err);
     });
 
-    // Remove do banco
     await prisma.attachment.delete({ where: { id } });
-
     res.json({ message: "Anexo removido com sucesso" });
   } catch (error) {
     console.error("Erro ao excluir anexo:", error);
@@ -207,4 +201,5 @@ module.exports = {
   getSharedTask,
   deleteTask,
   deleteAttachment,
+  upload, // exporta o middleware de upload
 };

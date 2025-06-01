@@ -11,28 +11,33 @@ import {
   Alert,
   FormHelperText,
 } from "@mui/material";
-import useAuth from "../hooks/useAuth"; // Ajuste o caminho
+import useAuth from "../hooks/useAuth"; // Hook de autenticação
 
-function Register() {
+const Register = () => {
+  // Estados locais para armazenar os dados do formulário
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
+
+  // Funções e estados vindos do hook de autenticação
   const {
     isLoading,
     openSnackbar,
     snackbarMessage,
     handleRegister,
     setOpenSnackbar,
-  } = useAuth(); // Use o Hook
+  } = useAuth();
 
-  // Validação de email e senha
+  // Funções auxiliares para validação dos campos
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const isValidPassword = (password) =>
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(password);
 
+  // Função chamada ao clicar em "Cadastrar"
   const registerUser = async () => {
-    // Renomeie para evitar conflito com a função do Hook
     if (!name.trim())
       return setOpenSnackbar({
         message: "O nome não pode estar vazio!",
@@ -51,6 +56,7 @@ function Register() {
 
   return (
     <Container maxWidth="sm">
+      {/* Tela de carregamento enquanto envia dados */}
       {isLoading && (
         <Box
           sx={{
@@ -70,6 +76,7 @@ function Register() {
         </Box>
       )}
 
+      {/* Formulário de registro */}
       <Box
         sx={{
           display: "flex",
@@ -86,6 +93,7 @@ function Register() {
           Criar Conta
         </Typography>
 
+        {/* Campo: Nome */}
         <TextField
           label="Nome"
           variant="outlined"
@@ -95,6 +103,8 @@ function Register() {
           onChange={(e) => setName(e.target.value)}
           disabled={isLoading}
         />
+
+        {/* Campo: Email com validação */}
         <TextField
           label="Email"
           variant="outlined"
@@ -106,6 +116,8 @@ function Register() {
           error={email && !isValidEmail(email)}
           helperText={email && !isValidEmail(email) ? "Email inválido" : ""}
         />
+
+        {/* Campo: Senha com validação */}
         <TextField
           label="Senha"
           type="password"
@@ -117,12 +129,12 @@ function Register() {
           disabled={isLoading}
           error={password && !isValidPassword(password)}
         />
-
         <FormHelperText sx={{ color: "gray", fontSize: "0.9rem", mb: 2 }}>
           * A senha deve conter pelo menos 8 caracteres, incluindo uma letra
           maiúscula, um número e um caractere especial.
         </FormHelperText>
 
+        {/* Botões de ação */}
         <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
           <Button
             variant="contained"
@@ -143,6 +155,7 @@ function Register() {
         </Box>
       </Box>
 
+      {/* Snackbar para mensagens de feedback */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}
@@ -159,6 +172,6 @@ function Register() {
       </Snackbar>
     </Container>
   );
-}
+};
 
 export default Register;

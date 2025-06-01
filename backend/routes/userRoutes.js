@@ -3,17 +3,26 @@ const {
   registerUser,
   loginUser,
   googleLogin,
-} = require("../controllers/userController"); // <- precisa estar exatamente assim
+} = require("../controllers/userController"); // <- Importação do controller (não alterar)
 
 const router = express.Router();
 
-// Rota para registrar um novo usuário
+/**
+ * POST /users/register
+ * Registra um novo usuário com nome, e-mail e senha
+ */
 router.post("/register", registerUser);
 
-// Rota para login de usuário
+/**
+ * POST /users/login
+ * Login tradicional usando e-mail e senha
+ */
 router.post("/login", loginUser);
 
-// Rota para login com Google (ADICIONE ESTA ROTA)
+/**
+ * POST /users/google-login
+ * Login utilizando autenticação com Google OAuth
+ */
 router.post("/google-login", googleLogin);
 
 module.exports = router;

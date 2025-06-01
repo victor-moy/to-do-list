@@ -15,27 +15,36 @@ import {
   Box,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import api from "../services/api"; // Ajuste conforme seu caminho
+import api from "../services/api"; // API personalizada para requisições HTTP
 
+/**
+ * Modal de edição de tarefa
+ * Permite alterar título, descrição, status, prioridade e anexos
+ */
 const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
+  // Estados locais para os campos editáveis
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editPriority, setEditPriority] = useState("");
   const [editStatus, setEditStatus] = useState("");
-  const [newFiles, setNewFiles] = useState([]);
-  const [attachments, setAttachments] = useState([]);
+  const [newFiles, setNewFiles] = useState([]); // Novos arquivos a anexar
+  const [attachments, setAttachments] = useState([]); // Anexos já existentes
 
+  // Quando uma nova task é recebida, inicializa os campos
   useEffect(() => {
     if (task) {
       setEditTitle(task.title);
       setEditDescription(task.description || "");
       setEditPriority(task.priority);
       setEditStatus(task.status);
-      setNewFiles([]);
+      setNewFiles([]); // Limpa novos arquivos ao editar outra tarefa
       setAttachments(task.attachments || []);
     }
   }, [task]);
 
+  /**
+   * Envia a tarefa atualizada para o componente pai
+   */
   const handleSave = () => {
     onSave({
       id: task.id,
@@ -48,6 +57,9 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
     });
   };
 
+  /**
+   * Remove um anexo existente (no backend e na interface)
+   */
   const handleDeleteAttachment = async (attachmentId) => {
     try {
       await api.delete(`/tasks/attachment/${attachmentId}`);
@@ -60,7 +72,9 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Editar Tarefa</DialogTitle>
+
       <DialogContent>
+        {/* Campo: Título */}
         <TextField
           autoFocus
           margin="dense"
@@ -70,6 +84,8 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
           onChange={(e) => setEditTitle(e.target.value)}
           sx={{ mt: 1, mb: 2 }}
         />
+
+        {/* Campo: Descrição */}
         <TextField
           margin="dense"
           label="Descrição"
@@ -80,6 +96,8 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
           onChange={(e) => setEditDescription(e.target.value)}
           sx={{ mb: 2 }}
         />
+
+        {/* Campo: Prioridade */}
         <FormControl fullWidth margin="dense" sx={{ mb: 2 }}>
           <InputLabel>Prioridade</InputLabel>
           <Select
@@ -92,6 +110,8 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
             <MenuItem value="High">Alta</MenuItem>
           </Select>
         </FormControl>
+
+        {/* Campo: Status */}
         <FormControl fullWidth margin="dense">
           <InputLabel>Status</InputLabel>
           <Select
@@ -117,7 +137,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
           />
         </FormControl>
 
-        {/* Anexos existentes com ícone de lixeira */}
+        {/* Lista de anexos existentes com botão de exclusão */}
         {attachments.length > 0 && (
           <Box sx={{ mt: 3 }}>
             <Typography variant="subtitle1">Anexos</Typography>
@@ -148,6 +168,8 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
           </Box>
         )}
       </DialogContent>
+
+      {/* Botões de ação */}
       <DialogActions>
         {task && (
           <Button

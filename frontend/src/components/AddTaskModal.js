@@ -17,40 +17,59 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
+/**
+ * Componente de modal para adicionar uma nova tarefa
+ * Inclui campos de texto, seleção de status e prioridade, e upload de arquivos
+ */
 const AddTaskModal = ({ open, onClose, onAddTask }) => {
+  // Estados dos campos
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("ToDo");
   const [priority, setPriority] = useState("Medium");
   const [files, setFiles] = useState([]);
 
+  /**
+   * Atualiza os arquivos selecionados no input de upload
+   */
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
       setFiles((prevFiles) => [...prevFiles, ...Array.from(e.target.files)]);
     }
   };
 
+  /**
+   * Remove um arquivo específico da lista de uploads
+   */
   const handleRemoveFile = (indexToRemove) => {
     setFiles((prevFiles) =>
       prevFiles.filter((_, index) => index !== indexToRemove)
     );
   };
 
+  /**
+   * Função chamada ao clicar em "Adicionar"
+   * Envia os dados para o componente pai e limpa os campos
+   */
   const handleAdd = () => {
     onAddTask({ title, description, status, priority, files });
+
     // Limpa os campos após o envio
     setTitle("");
     setDescription("");
     setStatus("ToDo");
     setPriority("Medium");
     setFiles([]);
-    onClose();
+
+    onClose(); // Fecha o modal
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Adicionar Nova Tarefa</DialogTitle>
+
       <DialogContent>
+        {/* Campo de título */}
         <TextField
           autoFocus
           margin="dense"
@@ -59,6 +78,8 @@ const AddTaskModal = ({ open, onClose, onAddTask }) => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+
+        {/* Campo de descrição */}
         <TextField
           margin="dense"
           label="Descrição"
@@ -68,6 +89,8 @@ const AddTaskModal = ({ open, onClose, onAddTask }) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+
+        {/* Status da tarefa */}
         <FormControl fullWidth margin="dense">
           <InputLabel>Status</InputLabel>
           <Select
@@ -80,6 +103,8 @@ const AddTaskModal = ({ open, onClose, onAddTask }) => {
             <MenuItem value="Done">Concluído</MenuItem>
           </Select>
         </FormControl>
+
+        {/* Prioridade da tarefa */}
         <FormControl fullWidth margin="dense">
           <InputLabel>Prioridade</InputLabel>
           <Select
@@ -104,7 +129,7 @@ const AddTaskModal = ({ open, onClose, onAddTask }) => {
           />
         </FormControl>
 
-        {/* Lista de arquivos selecionados */}
+        {/* Exibição da lista de arquivos selecionados */}
         {files.length > 0 && (
           <Box mt={2}>
             <Typography variant="subtitle2">Arquivos selecionados:</Typography>
@@ -126,6 +151,8 @@ const AddTaskModal = ({ open, onClose, onAddTask }) => {
           </Box>
         )}
       </DialogContent>
+
+      {/* Botões de ação */}
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
         <Button onClick={handleAdd} variant="contained" color="primary">

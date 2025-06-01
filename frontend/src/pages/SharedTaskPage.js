@@ -12,6 +12,7 @@ import {
   Chip,
 } from "@mui/material";
 
+// Definição de cores associadas ao status da tarefa
 const statusColors = {
   ToDo: "default",
   Doing: "primary",
@@ -19,10 +20,14 @@ const statusColors = {
 };
 
 const SharedTaskPage = () => {
+  // Pegamos o ID da tarefa compartilhada a partir da URL
   const { id } = useParams();
+
+  // Estados para armazenar os dados da tarefa e controle de loading
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Efeito colateral para buscar a tarefa na API assim que a página for carregada
   useEffect(() => {
     const fetchTask = async () => {
       try {
@@ -31,12 +36,14 @@ const SharedTaskPage = () => {
       } catch (error) {
         console.error("Erro ao carregar tarefa compartilhada", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Finaliza o carregamento independente do sucesso
       }
     };
+
     fetchTask();
   }, [id]);
 
+  // Mostra um loader enquanto os dados ainda estão sendo buscados
   if (loading) {
     return (
       <Box
@@ -50,6 +57,7 @@ const SharedTaskPage = () => {
     );
   }
 
+  // Caso a tarefa não seja encontrada
   if (!task) {
     return (
       <Container>
@@ -63,16 +71,19 @@ const SharedTaskPage = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 6 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
+        {/* Título da tarefa */}
         <Typography variant="h4" gutterBottom>
           {task.title}
         </Typography>
 
         <Divider sx={{ my: 2 }} />
 
+        {/* Descrição (ou texto padrão se estiver vazia) */}
         <Typography variant="body1" sx={{ mb: 2 }}>
           {task.description || "Sem descrição"}
         </Typography>
 
+        {/* Informações adicionais como prioridade e status */}
         <Box display="flex" gap={2} sx={{ mb: 2 }}>
           <Chip label={`Prioridade: ${task.priority}`} />
           <Chip
@@ -81,10 +92,12 @@ const SharedTaskPage = () => {
           />
         </Box>
 
+        {/* Data de criação formatada */}
         <Typography variant="caption" color="text.secondary">
           Criada em: {new Date(task.createdAt).toLocaleDateString()}
         </Typography>
 
+        {/* Lista de anexos, se existirem */}
         {task.attachments?.length > 0 && (
           <Box mt={4}>
             <Typography variant="subtitle1" gutterBottom>
@@ -93,8 +106,12 @@ const SharedTaskPage = () => {
             <ul>
               {task.attachments.map((file, index) => (
                 <li key={index}>
-                  <Link href={file.fileUrl} target="_blank" rel="noopener">
-                    {file.originalName || file.fileUrl}
+                  <Link
+                    href={file.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {file.originalName || file.fileUrl.split("/").pop()}
                   </Link>
                 </li>
               ))}

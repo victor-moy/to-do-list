@@ -9,15 +9,19 @@ import {
 } from "@mui/material";
 import TaskItem from "./TaskItem";
 
+/**
+ * Componente que representa uma coluna do quadro de tarefas (ex: ToDo, Doing, Done)
+ * Responsável por renderizar as tarefas de um status específico.
+ */
 const TaskColumn = ({
-  status,
-  statusLabel,
-  tasks,
-  onDragOver,
-  onDrop,
-  onTaskClick,
-  onDragStart,
-  onDropOnItem,
+  status, // Ex: 'ToDo', 'Doing', 'Done'
+  statusLabel, // Ex: 'A Fazer', 'Em Progresso', 'Concluído'
+  tasks, // Lista de tarefas a exibir nessa coluna
+  onDragOver, // Evento ao arrastar algo sobre a coluna
+  onDrop, // Evento ao soltar item na coluna
+  onTaskClick, // Ação ao clicar em uma tarefa
+  onDragStart, // Início do drag da tarefa
+  onDropOnItem, // Drop sobre outro item da lista
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -29,6 +33,8 @@ const TaskColumn = ({
       sm={isMobile ? 12 : 4}
       md={4}
       lg={4}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -36,8 +42,6 @@ const TaskColumn = ({
         width: isMobile ? "100%" : "30vw",
         maxWidth: isMobile ? "100%" : "30vw",
       }}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
     >
       <Box
         sx={{
@@ -45,12 +49,12 @@ const TaskColumn = ({
           borderRadius: "8px",
           padding: 2,
           boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
+          flexGrow: 1,
           display: "flex",
           flexDirection: "column",
-          flexGrow: 1,
-          minHeight: 0,
         }}
       >
+        {/* Título da coluna com contador de tarefas */}
         <Typography
           variant="h6"
           align="center"
@@ -59,6 +63,8 @@ const TaskColumn = ({
         >
           {statusLabel} ({tasks.length})
         </Typography>
+
+        {/* Lista de tarefas */}
         <Box
           sx={{
             flex: 1,
