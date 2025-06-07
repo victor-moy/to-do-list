@@ -31,13 +31,12 @@ const Login = () => {
   return (
     <Box
       sx={{
-        background: "radial-gradient(circle at top, #0d1117, #000)",
-        minHeight: "100vh",
+        height: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        overflow: "hidden",
-        p: 2,
+        overflow: "hidden", // evita scroll no iOS
+        px: 2,
       }}
     >
       <Paper

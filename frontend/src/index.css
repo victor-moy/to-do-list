@@ -7,8 +7,10 @@ body,
   outline: none !important;
   border: none !important;
   box-shadow: none !important;
-  background-color: #0d1117;
   color: #fff;
+  height: 100%;
+  overflow: hidden; /* evita scroll no mobile */
+  background: radial-gradient(circle at top, #0d1117, #000);
 }
 
 * {
