@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Paper,
-  Snackbar,
   TextField,
+  Button,
   Typography,
+  Box,
+  Snackbar,
+  Paper,
+  Divider,
 } from "@mui/material";
 import { GoogleLogin } from "@react-oauth/google";
 import useAuth from "../hooks/useAuth";
@@ -32,26 +31,28 @@ const Login = () => {
   return (
     <Box
       sx={{
+        background: "radial-gradient(circle at top, #0d1117, #000)",
         minHeight: "100vh",
-        background: "radial-gradient(ellipse at top, #0d1117 0%, #000 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden",
         p: 2,
       }}
     >
       <Paper
-        elevation={10}
+        elevation={8}
         sx={{
-          backgroundColor: "rgba(22, 27, 34, 0.95)",
-          backdropFilter: "blur(6px)",
           padding: 4,
-          borderRadius: 3,
           maxWidth: 400,
           width: "100%",
+          borderRadius: 4,
+          backgroundColor: "#161b22",
+          color: "#ffffff",
+          boxSizing: "border-box",
         }}
       >
-        {/* Logo ou SVG */}
+        {/* Logo SVG */}
         <Box display="flex" justifyContent="center" mb={2}>
           <svg
             width="48"
@@ -75,11 +76,12 @@ const Login = () => {
           variant="h5"
           align="center"
           gutterBottom
-          sx={{ fontWeight: "bold", color: "#fff" }}
+          sx={{ fontWeight: "bold" }}
         >
           Tacly
         </Typography>
 
+        {/* Campos */}
         <TextField
           label="Email"
           variant="filled"
@@ -87,14 +89,9 @@ const Login = () => {
           margin="normal"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          InputProps={{
-            style: { backgroundColor: "#0d1117", color: "#fff" },
-          }}
-          InputLabelProps={{
-            style: { color: "#ccc" },
-          }}
+          InputProps={{ style: { backgroundColor: "#0d1117", color: "#fff" } }}
+          InputLabelProps={{ style: { color: "#888" } }}
         />
-
         <TextField
           label="Senha"
           type="password"
@@ -103,57 +100,46 @@ const Login = () => {
           margin="normal"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          InputProps={{
-            style: { backgroundColor: "#0d1117", color: "#fff" },
-          }}
-          InputLabelProps={{
-            style: { color: "#ccc" },
-          }}
+          InputProps={{ style: { backgroundColor: "#0d1117", color: "#fff" } }}
+          InputLabelProps={{ style: { color: "#888" } }}
         />
 
         <Button
           variant="contained"
           fullWidth
-          onClick={() => handleLogin(email, password)}
-          disabled={isLoading || isLoginDisabled}
           sx={{
             mt: 2,
             backgroundColor: "#3f8cff",
-            fontWeight: "bold",
+            color: "#fff",
             "&:hover": { backgroundColor: "#336fd1" },
           }}
+          disabled={isLoading || isLoginDisabled}
+          onClick={() => handleLogin(email, password)}
         >
           {isLoading ? "Carregando..." : "Login"}
         </Button>
 
-        {/* Divider */}
         <Divider sx={{ my: 2, color: "#ccc", fontWeight: 500 }}>ou</Divider>
 
-        {/* Login com Google - ocupa 100% */}
-        <Box display="flex" justifyContent="center" width="100%" mb={2}>
-          <Box width="100%">
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={() => setOpenSnackbar("Erro ao autenticar com o Google")}
-              useOneTap
-              theme="filled_black"
-              width="100%" // ❗️isso não faz nada no componente, então usamos o Box
-            />
-          </Box>
+        <Box mb={2}>
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+            onError={() => setOpenSnackbar("Erro ao autenticar com o Google")}
+            useOneTap
+            width="100%"
+          />
         </Box>
 
-        {/* Botão Cadastre-se estilizado */}
         <Button
           variant="outlined"
           fullWidth
           onClick={() => navigate("/register")}
           sx={{
-            mt: 2,
-            color: "#ffffff",
-            borderColor: "#444",
+            color: "#9c27b0",
+            borderColor: "#9c27b0",
             "&:hover": {
-              backgroundColor: "#1e1e1e",
-              borderColor: "#888",
+              backgroundColor: "rgba(156, 39, 176, 0.1)",
+              borderColor: "#ba68c8",
             },
           }}
         >
@@ -161,6 +147,7 @@ const Login = () => {
         </Button>
       </Paper>
 
+      {/* Snackbar de mensagens */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}
