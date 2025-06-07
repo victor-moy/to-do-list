@@ -9,19 +9,15 @@ import {
 } from "@mui/material";
 import TaskItem from "./TaskItem";
 
-/**
- * Componente que representa uma coluna do quadro de tarefas (ex: ToDo, Doing, Done)
- * Responsável por renderizar as tarefas de um status específico.
- */
 const TaskColumn = ({
-  status, // Ex: 'ToDo', 'Doing', 'Done'
-  statusLabel, // Ex: 'A Fazer', 'Em Progresso', 'Concluído'
-  tasks, // Lista de tarefas a exibir nessa coluna
-  onDragOver, // Evento ao arrastar algo sobre a coluna
-  onDrop, // Evento ao soltar item na coluna
-  onTaskClick, // Ação ao clicar em uma tarefa
-  onDragStart, // Início do drag da tarefa
-  onDropOnItem, // Drop sobre outro item da lista
+  status,
+  statusLabel,
+  tasks,
+  onDragOver,
+  onDrop,
+  onTaskClick,
+  onDragStart,
+  onDropOnItem,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -45,34 +41,36 @@ const TaskColumn = ({
     >
       <Box
         sx={{
-          backgroundColor: "#fff",
-          borderRadius: "8px",
+          backgroundColor: "rgba(22, 27, 34, 0.95)",
+          borderRadius: "10px",
           padding: 2,
-          boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
+          border: "1px solid #2d2d44",
         }}
       >
-        {/* Título da coluna com contador de tarefas */}
         <Typography
           variant="h6"
           align="center"
           gutterBottom
-          sx={{ color: "#777", mb: 1 }}
+          sx={{
+            color: "#ffffffcc",
+            fontWeight: 600,
+            letterSpacing: 1,
+          }}
         >
           {statusLabel} ({tasks.length})
         </Typography>
 
-        {/* Lista de tarefas */}
         <Box
           sx={{
             flex: 1,
-            backgroundColor: "#f0f0f0",
+            backgroundColor: "#0f0f1b",
             padding: 1,
             borderRadius: "8px",
             overflowY: "auto",
-            minHeight: "100px",
+            minHeight: "120px",
           }}
         >
           <List sx={{ padding: 0 }}>

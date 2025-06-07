@@ -10,24 +10,23 @@ import {
   Paper,
   Divider,
   Chip,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
-// Definição de cores associadas ao status da tarefa
 const statusColors = {
-  ToDo: "default",
+  ToDo: "secondary", // Roxo (visualmente forte no escuro)
   Doing: "primary",
   Done: "success",
 };
 
 const SharedTaskPage = () => {
-  // Pegamos o ID da tarefa compartilhada a partir da URL
   const { id } = useParams();
-
-  // Estados para armazenar os dados da tarefa e controle de loading
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
-  // Efeito colateral para buscar a tarefa na API assim que a página for carregada
   useEffect(() => {
     const fetchTask = async () => {
       try {
@@ -36,28 +35,35 @@ const SharedTaskPage = () => {
       } catch (error) {
         console.error("Erro ao carregar tarefa compartilhada", error);
       } finally {
-        setLoading(false); // Finaliza o carregamento independente do sucesso
+        setLoading(false);
       }
     };
 
     fetchTask();
   }, [id]);
 
-  // Mostra um loader enquanto os dados ainda estão sendo buscados
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
   if (loading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
+        sx={{
+          background: "radial-gradient(circle at top, #0d1117, #000)",
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
         <CircularProgress />
       </Box>
     );
   }
 
-  // Caso a tarefa não seja encontrada
   if (!task) {
     return (
       <Container>
@@ -69,35 +75,92 @@ const SharedTaskPage = () => {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        {/* Título da tarefa */}
-        <Typography variant="h4" gutterBottom>
+    <Box
+      sx={{
+        background: "radial-gradient(circle at top, #0d1117, #000)",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 2,
+      }}
+    >
+      <Paper
+        elevation={6}
+        sx={{
+          padding: 4,
+          borderRadius: 4,
+          maxWidth: 500,
+          width: "100%",
+          backgroundColor: "#161b22",
+          color: "#ffffff",
+          position: "relative",
+        }}
+      >
+        {/* Logo Tacly */}
+        <Box display="flex" justifyContent="center" mb={2}>
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 200 200"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="100" cy="100" r="100" fill="#3F8CFF" />
+            <path
+              d="M60 105L90 135L140 75"
+              stroke="white"
+              strokeWidth="12"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </Box>
+
+        {/* Botão copiar */}
+        <Box position="absolute" top={16} right={16}>
+          <Tooltip title={copied ? "Link copiado!" : "Copiar link"}>
+            <IconButton
+              size="small"
+              onClick={handleCopyLink}
+              sx={{ color: "#aaa" }}
+            >
+              <ContentCopyIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <Typography
+          variant="h5"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: "bold" }}
+        >
           {task.title}
         </Typography>
 
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 2, backgroundColor: "#2e3b4e" }} />
 
-        {/* Descrição (ou texto padrão se estiver vazia) */}
         <Typography variant="body1" sx={{ mb: 2 }}>
           {task.description || "Sem descrição"}
         </Typography>
 
-        {/* Informações adicionais como prioridade e status */}
-        <Box display="flex" gap={2} sx={{ mb: 2 }}>
-          <Chip label={`Prioridade: ${task.priority}`} />
+        <Box display="flex" gap={1} flexWrap="wrap" sx={{ mb: 2 }}>
+          <Chip
+            label={`Prioridade: ${task.priority}`}
+            color="info"
+            variant="filled"
+          />
           <Chip
             label={`Status: ${task.status}`}
             color={statusColors[task.status] || "default"}
           />
         </Box>
 
-        {/* Data de criação formatada */}
         <Typography variant="caption" color="text.secondary">
           Criada em: {new Date(task.createdAt).toLocaleDateString()}
         </Typography>
 
-        {/* Lista de anexos, se existirem */}
         {task.attachments?.length > 0 && (
           <Box mt={4}>
             <Typography variant="subtitle1" gutterBottom>
@@ -110,6 +173,8 @@ const SharedTaskPage = () => {
                     href={file.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    underline="hover"
+                    color="#90caf9"
                   >
                     {file.originalName || file.fileUrl.split("/").pop()}
                   </Link>
@@ -119,7 +184,7 @@ const SharedTaskPage = () => {
           </Box>
         )}
       </Paper>
-    </Container>
+    </Box>
   );
 };
 

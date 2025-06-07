@@ -8,11 +8,11 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import api from "../services/api";
 import AddIcon from "@mui/icons-material/Add";
+import api from "../services/api";
 import EditTaskModal from "../components/EditTaskModal";
 import AddTaskModal from "../components/AddTaskModal";
-import TaskColumn from "../components/TaskColumn"; // Importe o componente TaskColumn
+import TaskColumn from "../components/TaskColumn";
 
 const statusLabels = {
   ToDo: "A Fazer",
@@ -30,9 +30,7 @@ function TaskList() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
-    if (userId) {
-      fetchTasks();
-    }
+    if (userId) fetchTasks();
   }, [userId]);
 
   const fetchTasks = async () => {
@@ -44,13 +42,8 @@ function TaskList() {
     }
   };
 
-  const handleOpenAddTask = () => {
-    setIsAddingTask(true);
-  };
-
-  const handleCloseAddTask = () => {
-    setIsAddingTask(false);
-  };
+  const handleOpenAddTask = () => setIsAddingTask(true);
+  const handleCloseAddTask = () => setIsAddingTask(false);
 
   const handleAddTask = async (newTaskData) => {
     if (newTaskData.title && userId) {
@@ -60,16 +53,10 @@ function TaskList() {
       formData.append("status", newTaskData.status);
       formData.append("priority", newTaskData.priority);
       formData.append("userId", userId);
-
-      newTaskData.files.forEach((file) => {
-        formData.append("files", file);
-      });
-
+      newTaskData.files.forEach((file) => formData.append("files", file));
       try {
         await api.post("/tasks", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
         });
         fetchTasks();
         handleCloseAddTask();
@@ -81,7 +68,6 @@ function TaskList() {
 
   const updateTaskStatus = async (taskId, newStatus) => {
     const taskToUpdate = tasks.find((task) => task.id === taskId);
-
     if (taskToUpdate) {
       const { title, description, priority, userId } = taskToUpdate;
       try {
@@ -118,17 +104,14 @@ function TaskList() {
         formData.append("status", updatedTaskData.status);
         formData.append("priority", updatedTaskData.priority);
         formData.append("userId", updatedTaskData.userId);
-
         if (updatedTaskData.newFiles?.length > 0) {
-          updatedTaskData.newFiles.forEach((file) => {
-            formData.append("files", file);
-          });
+          updatedTaskData.newFiles.forEach((file) =>
+            formData.append("files", file)
+          );
         }
-
         await api.put(`/tasks/${selectedTask.id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-
         fetchTasks();
         setSelectedTask(null);
       } catch (error) {
@@ -143,11 +126,9 @@ function TaskList() {
     const fromIndex = filtered.findIndex((t) => t.id === fromId);
     const toIndex = filtered.findIndex((t) => t.id === toId);
     if (fromIndex === -1 || toIndex === -1) return;
-
     const item = filtered[fromIndex];
     filtered.splice(fromIndex, 1);
     filtered.splice(toIndex, 0, item);
-
     const reordered = [
       ...updated.filter((t) => t.status !== status),
       ...filtered,
@@ -155,10 +136,7 @@ function TaskList() {
     setTasks(reordered);
   };
 
-  const handleDragStart = (taskId) => {
-    setDraggedTaskId(taskId);
-  };
-
+  const handleDragStart = (taskId) => setDraggedTaskId(taskId);
   const handleDropColumn = (e, newStatus) => {
     e.preventDefault();
     if (draggedTaskId) {
@@ -173,7 +151,6 @@ function TaskList() {
   const handleDropOnItem = (e, targetTask) => {
     e.preventDefault();
     if (!draggedTaskId || draggedTaskId === targetTask.id) return;
-
     const draggedTask = tasks.find((t) => t.id === draggedTaskId);
     if (draggedTask.status === targetTask.status) {
       reorderTasks(targetTask.status, draggedTaskId, targetTask.id);
@@ -183,46 +160,69 @@ function TaskList() {
     setDraggedTaskId(null);
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleTaskClick = (task) => {
-    setSelectedTask(task);
-  };
+  const handleDragOver = (e) => e.preventDefault();
+  const handleTaskClick = (task) => setSelectedTask(task);
 
   return (
-    <Container
-      maxWidth={false}
+    <Box
       sx={{
-        padding: 4,
+        background: "radial-gradient(circle at top, #0d1117, #000)",
         minHeight: "100vh",
-        backgroundColor: "#f4f6f8",
         display: "flex",
         flexDirection: "column",
+        p: 4,
       }}
     >
+      {/* Logo Tacly */}
+      <Box display="flex" justifyContent="center" mb={2}>
+        <svg
+          width="48"
+          height="48"
+          viewBox="0 0 200 200"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="100" cy="100" r="100" fill="#3F8CFF" />
+          <path
+            d="M60 105L90 135L140 75"
+            stroke="white"
+            strokeWidth="12"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </Box>
+
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           mb: 3,
+          color: "#fff",
         }}
       >
-        <Typography variant="h5" component="h1" sx={{ fontWeight: 400 }}>
-          Lista de Tarefas
+        <Typography variant="h5" fontWeight="bold">
+          Tacly - Lista de Tarefas
         </Typography>
         <Button
           variant="outlined"
           startIcon={<AddIcon />}
           onClick={handleOpenAddTask}
+          sx={{
+            color: "#9c27b0",
+            borderColor: "#9c27b0",
+            "&:hover": {
+              backgroundColor: "rgba(156, 39, 176, 0.1)",
+              borderColor: "#ba68c8",
+            },
+          }}
         >
           Adicionar Tarefa
         </Button>
       </Box>
 
-      <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+      <Grid container spacing={2}>
         {["ToDo", "Doing", "Done"].map((status) => (
           <TaskColumn
             key={status}
@@ -238,14 +238,12 @@ function TaskList() {
         ))}
       </Grid>
 
-      {/* Modal de Adicionar Tarefa (agora usando o componente separado) */}
       <AddTaskModal
         open={isAddingTask}
         onClose={handleCloseAddTask}
         onAddTask={handleAddTask}
       />
 
-      {/* Modal de Edição de Tarefa */}
       <EditTaskModal
         open={!!selectedTask}
         onClose={() => setSelectedTask(null)}
@@ -253,7 +251,7 @@ function TaskList() {
         onSave={handleUpdateTaskDetails}
         onDelete={handleDeleteTask}
       />
-    </Container>
+    </Box>
   );
 }
 

@@ -1,0 +1,21 @@
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background-color: #0d1117;
+  color: #fff;
+}
+
+* {
+  box-sizing: inherit;
+}
+
+*:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}

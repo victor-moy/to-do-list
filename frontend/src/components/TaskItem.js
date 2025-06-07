@@ -1,62 +1,64 @@
 import React from "react";
 import { ListItem, Typography, Box, Chip } from "@mui/material";
 
-// Mapeamento de cores baseado na prioridade
+// Cores das prioridades em estilo neon/discreto
 const priorityColors = {
-  Low: "#4CAF50", // Verde: baixa prioridade
-  Medium: "#FFC107", // Amarelo: prioridade média
-  High: "#F44336", // Vermelho: alta prioridade
+  Low: "#00C853", // Neon verde
+  Medium: "#FFD600", // Neon amarelo
+  High: "#FF1744", // Neon vermelho
 };
 
-/**
- * Componente que representa visualmente uma única tarefa dentro da coluna.
- * Permite clique para abrir o modal de edição e suporte a drag-and-drop.
- */
 const TaskItem = ({ task, onClick, onDragStart, onDragOver, onDrop }) => {
   return (
     <ListItem
-      draggable // Torna o item arrastável
-      onClick={() => onClick(task)} // Ao clicar, abre o modal
-      onDragStart={() => onDragStart(task.id)} // Início do drag (envia ID da tarefa)
-      onDragOver={onDragOver} // Permite drop por cima
-      onDrop={(e) => onDrop(e, task)} // Drop realizado sobre outra tarefa
+      draggable
+      onClick={() => onClick(task)}
+      onDragStart={() => onDragStart(task.id)}
+      onDragOver={onDragOver}
+      onDrop={(e) => onDrop(e, task)}
       sx={{
-        border: `1px solid ${priorityColors[task.priority]}`, // Borda com base na prioridade
-        backgroundColor: "#f9f9f9",
-        borderRadius: "4px",
-        marginBottom: "8px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
-        wordBreak: "break-word",
-        whiteSpace: "pre-wrap",
-        padding: "12px",
+        backgroundColor: "#1F1F28",
+        borderLeft: `4px solid ${priorityColors[task.priority]}`,
+        borderRadius: "8px",
+        marginBottom: "12px",
+        padding: "16px",
         cursor: "grab",
+        transition: "transform 0.1s ease-in-out",
+        "&:hover": {
+          transform: "scale(1.01)",
+        },
         display: "flex",
         flexDirection: "column",
-        gap: "8px",
-        width: "100%",
+        gap: 1,
+        color: "#f5f5f5",
       }}
     >
-      {/* Título da tarefa */}
-      <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+      <Typography
+        variant="subtitle1"
+        sx={{ fontWeight: 600, color: "#fff", lineHeight: 1.4 }}
+      >
         {task.title}
       </Typography>
 
-      {/* Descrição, se existir */}
       {task.description && (
-        <Typography variant="body2" color="textSecondary">
+        <Typography
+          variant="body2"
+          sx={{ color: "#bbb", fontSize: "0.875rem", lineHeight: 1.5 }}
+        >
           {task.description}
         </Typography>
       )}
 
-      {/* Chip com a prioridade */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Chip
           label={task.priority}
           size="small"
           sx={{
             backgroundColor: priorityColors[task.priority],
-            color: "#fff",
+            color: "#000",
+            fontWeight: "bold",
             fontSize: "0.75rem",
+            px: 1,
           }}
         />
       </Box>

@@ -70,11 +70,24 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Editar Tarefa</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      PaperProps={{
+        sx: {
+          backgroundColor: "#2A2D3E",
+          color: "#fff",
+          borderRadius: 3,
+        },
+      }}
+    >
+      <DialogTitle sx={{ fontWeight: "bold", color: "#fff" }}>
+        Editar Tarefa
+      </DialogTitle>
 
       <DialogContent>
-        {/* Campo: Título */}
         <TextField
           autoFocus
           margin="dense"
@@ -83,9 +96,10 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
           value={editTitle}
           onChange={(e) => setEditTitle(e.target.value)}
           sx={{ mt: 1, mb: 2 }}
+          InputProps={{ style: { color: "#fff" } }}
+          InputLabelProps={{ style: { color: "#ccc" } }}
         />
 
-        {/* Campo: Descrição */}
         <TextField
           margin="dense"
           label="Descrição"
@@ -95,15 +109,16 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
           value={editDescription}
           onChange={(e) => setEditDescription(e.target.value)}
           sx={{ mb: 2 }}
+          InputProps={{ style: { color: "#fff" } }}
+          InputLabelProps={{ style: { color: "#ccc" } }}
         />
 
-        {/* Campo: Prioridade */}
         <FormControl fullWidth margin="dense" sx={{ mb: 2 }}>
-          <InputLabel>Prioridade</InputLabel>
+          <InputLabel sx={{ color: "#ccc" }}>Prioridade</InputLabel>
           <Select
             value={editPriority || task?.priority}
-            label="Prioridade"
             onChange={(e) => setEditPriority(e.target.value)}
+            sx={{ color: "#fff" }}
           >
             <MenuItem value="Low">Baixa</MenuItem>
             <MenuItem value="Medium">Média</MenuItem>
@@ -111,13 +126,12 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
           </Select>
         </FormControl>
 
-        {/* Campo: Status */}
         <FormControl fullWidth margin="dense">
-          <InputLabel>Status</InputLabel>
+          <InputLabel sx={{ color: "#ccc" }}>Status</InputLabel>
           <Select
             value={editStatus || task?.status}
-            label="Status"
             onChange={(e) => setEditStatus(e.target.value)}
+            sx={{ color: "#fff" }}
           >
             <MenuItem value="ToDo">A Fazer</MenuItem>
             <MenuItem value="Doing">Em Progresso</MenuItem>
@@ -125,8 +139,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
           </Select>
         </FormControl>
 
-        {/* Upload de novos arquivos */}
-        <FormControl fullWidth margin="dense">
+        <FormControl fullWidth margin="dense" sx={{ mt: 2 }}>
           <input
             type="file"
             multiple
@@ -134,24 +147,34 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
               setNewFiles((prev) => [...prev, ...Array.from(e.target.files)])
             }
             accept="image/*, .pdf, .docx, .txt"
+            style={{ color: "#fff" }}
           />
         </FormControl>
 
-        {/* Lista de anexos existentes com botão de exclusão */}
         {attachments.length > 0 && (
           <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1">Anexos</Typography>
-            <ul>
+            <Typography variant="subtitle1" sx={{ color: "#fff" }}>
+              Anexos
+            </Typography>
+            <ul style={{ paddingLeft: "1rem" }}>
               {attachments.map((file) => (
                 <li
                   key={file.id}
-                  style={{ display: "flex", alignItems: "center" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    color: "#ccc",
+                  }}
                 >
                   <a
                     href={file.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ marginRight: "10px" }}
+                    style={{
+                      marginRight: "10px",
+                      color: "#90caf9",
+                      wordBreak: "break-all",
+                    }}
                   >
                     {file.fileUrl.split("/").pop()}
                   </a>
@@ -169,24 +192,63 @@ const EditTaskModal = ({ open, onClose, task, onSave, onDelete }) => {
         )}
       </DialogContent>
 
-      {/* Botões de ação */}
-      <DialogActions>
+      <DialogActions
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: "stretch",
+          gap: 1,
+          mt: 2,
+        }}
+      >
         {task && (
           <Button
             href={`${window.location.origin}/shared/${task.id}`}
             target="_blank"
             variant="outlined"
-            sx={{ mr: "auto" }}
+            sx={{
+              flex: 1,
+              color: "#90caf9",
+              borderColor: "#90caf9",
+            }}
           >
             Compartilhar
           </Button>
         )}
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSave} variant="contained" color="primary">
+
+        <Button
+          onClick={onClose}
+          sx={{
+            flex: 1,
+            color: "#ccc",
+            borderColor: "#444",
+            border: "1px solid",
+          }}
+        >
+          Cancelar
+        </Button>
+
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          sx={{
+            flex: 1,
+            backgroundColor: "#3f8cff",
+            color: "#fff",
+            "&:hover": {
+              backgroundColor: "#336fd1",
+            },
+          }}
+        >
           Salvar
         </Button>
+
         {task && (
-          <IconButton onClick={() => onDelete(task.id)} color="error">
+          <IconButton
+            onClick={() => onDelete(task.id)}
+            color="error"
+            sx={{ alignSelf: "center" }}
+          >
             <DeleteIcon />
           </IconButton>
         )}
