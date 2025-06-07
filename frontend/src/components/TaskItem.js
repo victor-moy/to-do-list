@@ -31,6 +31,7 @@ const TaskItem = ({ task, onClick, onDragStart, onDragOver, onDrop }) => {
         flexDirection: "column",
         gap: 1,
         color: "#f5f5f5",
+        wordBreak: "break-word",
       }}
     >
       <Typography
