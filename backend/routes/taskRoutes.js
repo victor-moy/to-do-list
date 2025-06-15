@@ -6,13 +6,10 @@ const {
   getSharedTask,
   deleteTask,
   deleteAttachment,
+  upload, // IMPORTANTE: upload vem do controller!
 } = require("../controllers/taskController");
-const multer = require("multer");
 
 const router = express.Router();
-
-// ⚙️ Configuração do multer (upload básico para arquivos)
-const upload = multer({ dest: "uploads/" });
 
 /**
  * GET /:userId
@@ -24,13 +21,13 @@ router.get("/:userId", getTasks);
  * POST /
  * Cria nova tarefa (pode conter arquivos anexos)
  */
-router.post("/", upload.array("files"), createTask);
+router.post("/", upload, createTask); // usa upload do controller
 
 /**
  * PUT /:id
  * Atualiza tarefa existente e permite anexar novos arquivos
  */
-router.put("/:id", upload.array("files"), updateTask);
+router.put("/:id", upload, updateTask); // usa upload do controller
 
 /**
  * DELETE /:id

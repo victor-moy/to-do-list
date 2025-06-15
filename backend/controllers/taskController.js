@@ -1,15 +1,10 @@
-// taskController.js
-
 const { PrismaClient } = require("@prisma/client");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../cloudinary");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 
 // Instância do Prisma
 const prisma = new PrismaClient();
-
-// BASE_URL para arquivos, com fallback para ambiente local
-const BASE_URL = process.env.BASE_URL || "http://localhost:5001";
 
 /**
  * Configuração de upload de arquivos via multer
@@ -17,34 +12,15 @@ const BASE_URL = process.env.BASE_URL || "http://localhost:5001";
  * - Limita a 10MB
  * - Aceita apenas tipos permitidos
  */
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "./uploads"),
-  filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${file.originalname.replace(
-      /\s+/g,
-      "-"
-    )}`;
-    cb(null, uniqueName);
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "tacly",
+    resource_type: "auto",
   },
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/gif",
-      "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "text/plain",
-    ];
-    allowedTypes.includes(file.mimetype)
-      ? cb(null, true)
-      : cb(new Error("Tipo de arquivo não permitido"), false);
-  },
-}).array("files");
+const upload = multer({ storage }).array("files");
 
 // Retorna todas as tarefas de um usuário (com anexos incluídos)
 const getTasks = async (req, res) => {
@@ -84,8 +60,8 @@ const createTask = async (req, res) => {
         files.map((file) =>
           prisma.attachment.create({
             data: {
-              filePath: file.path,
-              fileUrl: `${BASE_URL}/uploads/${file.filename}`,
+              fileUrl: file.path, // ainda retorna a URL final
+              filePath: file.filename, // salva o nome no cloud, opcional
               taskId: task.id,
             },
           })
@@ -123,8 +99,8 @@ const updateTask = async (req, res) => {
         files.map((file) =>
           prisma.attachment.create({
             data: {
-              filePath: file.path,
-              fileUrl: `${BASE_URL}/uploads/${file.filename}`,
+              fileUrl: file.path, // ainda retorna a URL final
+              filePath: file.filename, // salva o nome no cloud, opcional
               taskId: updatedTask.id,
             },
           })
@@ -176,17 +152,15 @@ const getSharedTask = async (req, res) => {
 // Remove anexo tanto do disco quanto do banco
 const deleteAttachment = async (req, res) => {
   const { id } = req.params;
+
   try {
     const attachment = await prisma.attachment.findUnique({ where: { id } });
-    if (!attachment)
+    if (!attachment) {
       return res.status(404).json({ error: "Anexo não encontrado" });
-
-    // Remove o arquivo físico
-    fs.unlink(attachment.filePath, (err) => {
-      if (err) console.warn("Erro ao remover arquivo do disco:", err);
-    });
+    }
 
     await prisma.attachment.delete({ where: { id } });
+
     res.json({ message: "Anexo removido com sucesso" });
   } catch (error) {
     console.error("Erro ao excluir anexo:", error);
